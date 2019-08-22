@@ -1,12 +1,11 @@
 package py.com.fuentepy.appfinanzasBackend.payload;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class LoginRequest {
+
     @NotBlank
-    @Email
-    private String email;
+    private String userName;
 
     @NotBlank
     private String password;
@@ -14,17 +13,17 @@ public class LoginRequest {
     public LoginRequest() {
     }
 
-    public LoginRequest(@NotBlank @Email String email, @NotBlank String password) {
-        this.email = email;
+    public LoginRequest(@NotBlank String userName, @NotBlank String password) {
+        this.userName = userName;
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -38,7 +37,7 @@ public class LoginRequest {
     @Override
     public String toString() {
         return "LoginRequest{" +
-                "email='" + email + '\'' +
+                "userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

@@ -21,8 +21,7 @@ public class Usuario implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String userName;
 
     @Column(nullable = false)
     private String name;
@@ -38,10 +37,6 @@ public class Usuario implements Serializable {
 
     @JsonIgnore
     private String password;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
 
     private String providerId;
 

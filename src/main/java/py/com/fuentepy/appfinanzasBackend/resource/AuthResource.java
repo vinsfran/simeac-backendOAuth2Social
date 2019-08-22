@@ -2,7 +2,6 @@ package py.com.fuentepy.appfinanzasBackend.resource;
 
 import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
 import py.com.fuentepy.appfinanzasBackend.exception.BadRequestException;
-import py.com.fuentepy.appfinanzasBackend.entity.AuthProvider;
 import py.com.fuentepy.appfinanzasBackend.payload.ApiResponse;
 import py.com.fuentepy.appfinanzasBackend.payload.AuthResponse;
 import py.com.fuentepy.appfinanzasBackend.payload.LoginRequest;
@@ -41,10 +40,9 @@ public class AuthResource {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
+                        loginRequest.getUserName(),
                         loginRequest.getPassword()
                 )
         );
@@ -59,10 +57,10 @@ public class AuthResource {
     public ResponseEntity<?> authenticateUserSocial(@Valid @RequestBody LoginRequest loginRequest) {
         Usuario usuario = null;
 
-        Optional<Usuario> optional = usuarioRepository.findByEmail(loginRequest.getEmail());
+        Optional<Usuario> optional = usuarioRepository.findByUserName(loginRequest.getUserName());
         if (optional.isPresent()) {
             usuario = optional.get();
-        }else {
+        } else {
             throw new BadRequestException("Email no existe.");
         }
 
@@ -81,16 +79,17 @@ public class AuthResource {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if (usuarioRepository.existsByEmail(signUpRequest.getEmail())) {
+
+        System.out.println("registerUser " + signUpRequest.toString());
+        if (usuarioRepository.existsByUserName(signUpRequest.getUserName())) {
             throw new BadRequestException("Email address already in use.");
         }
 
         // Creating usuario's account
         Usuario usuario = new Usuario();
         usuario.setName(signUpRequest.getName());
-        usuario.setEmail(signUpRequest.getEmail());
+        usuario.setUserName(signUpRequest.getUserName());
         usuario.setPassword(signUpRequest.getPassword());
-        usuario.setProvider(AuthProvider.local);
 
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
@@ -98,7 +97,7 @@ public class AuthResource {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/usuario/me")
-                .buildAndExpand(result.getId()).toUri();
+                .buildAndExpand(result.getUserName()).toUri();
 
         return ResponseEntity.created(location)
                 .body(new ApiResponse(true, "Usuario registered successfully"));

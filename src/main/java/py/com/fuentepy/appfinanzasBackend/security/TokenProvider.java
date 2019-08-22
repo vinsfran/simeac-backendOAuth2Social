@@ -20,9 +20,6 @@ public class TokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
 
-//    @Autowired
-//    private UsuarioService usuarioService;
-
     private AppProperties appProperties;
 
     public TokenProvider(AppProperties appProperties) {
@@ -31,7 +28,6 @@ public class TokenProvider {
 
     public String createToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-//        Usuario usuario = usuarioService.findById(userPrincipal.getId());
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
 
@@ -42,7 +38,7 @@ public class TokenProvider {
         }
 
         return Jwts.builder()
-                .setSubject(Long.toString(userPrincipal.getId()))
+                .setSubject(userPrincipal.getUsername())
                 .claim("email", userPrincipal.getEmail())
                 .claim("authorities", roles)
                 .setIssuedAt(new Date())

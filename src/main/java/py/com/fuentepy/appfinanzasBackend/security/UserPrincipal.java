@@ -1,10 +1,10 @@
 package py.com.fuentepy.appfinanzasBackend.security;
 
-import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,16 +12,18 @@ import java.util.List;
 import java.util.Map;
 
 public class UserPrincipal implements OAuth2User, UserDetails {
-    private Long id;
+    private String userName;
     private String email;
     private String password;
+    private String name;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
+    public UserPrincipal(String userName, String email, String password, String name, Collection<? extends GrantedAuthority> authorities) {
+        this.userName = userName;
         this.email = email;
         this.password = password;
+        this.name = name;
         this.authorities = authorities;
     }
 
@@ -30,9 +32,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
                 singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         return new UserPrincipal(
-                usuario.getId(),
+                usuario.getUserName(),
                 usuario.getEmail(),
                 usuario.getPassword(),
+                usuario.getName(),
                 authorities
         );
     }
@@ -41,10 +44,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         UserPrincipal userPrincipal = UserPrincipal.create(usuario);
         userPrincipal.setAttributes(attributes);
         return userPrincipal;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getEmail() {
@@ -58,7 +57,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userName;
     }
 
     @Override
@@ -97,6 +96,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return String.valueOf(id);
+        return this.name;
     }
 }

@@ -3,7 +3,6 @@ package py.com.fuentepy.appfinanzasBackend.config;
 import py.com.fuentepy.appfinanzasBackend.security.CustomUserDetailsService;
 import py.com.fuentepy.appfinanzasBackend.security.RestAuthenticationEntryPoint;
 import py.com.fuentepy.appfinanzasBackend.security.TokenAuthenticationFilter;
-import py.com.fuentepy.appfinanzasBackend.security.oauth2.CustomOAuth2UserService;
 import py.com.fuentepy.appfinanzasBackend.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
 import py.com.fuentepy.appfinanzasBackend.security.oauth2.OAuth2AuthenticationFailureHandler;
 import py.com.fuentepy.appfinanzasBackend.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -33,9 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -121,11 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .baseUri("/oauth2/authorize")
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                 .and()
-                .redirectionEndpoint()
-                .baseUri("/oauth2/callback/*")
-                .and()
                 .userInfoEndpoint()
-                .userService(customOAuth2UserService)
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler);

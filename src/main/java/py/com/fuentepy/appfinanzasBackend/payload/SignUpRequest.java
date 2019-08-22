@@ -1,25 +1,33 @@
 package py.com.fuentepy.appfinanzasBackend.payload;
 
-import javax.validation.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
 import javax.validation.constraints.NotBlank;
 
 public class SignUpRequest {
+
     @NotBlank
+    @JsonProperty("name")
+    @SerializedName("name")
     private String name;
 
     @NotBlank
-    @Email
-    private String email;
+    @JsonProperty("username")
+    @SerializedName("username")
+    private String userName;
 
     @NotBlank
+    @JsonProperty("password")
+    @SerializedName("password")
     private String password;
 
     public SignUpRequest() {
     }
 
-    public SignUpRequest(@NotBlank String name, @NotBlank @Email String email, @NotBlank String password) {
+    public SignUpRequest(@NotBlank String name, @NotBlank String userName, @NotBlank String password) {
         this.name = name;
-        this.email = email;
+        this.userName = userName;
         this.password = password;
     }
 
@@ -31,12 +39,12 @@ public class SignUpRequest {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -51,7 +59,7 @@ public class SignUpRequest {
     public String toString() {
         return "SignUpRequest{" +
                 "name='" + name + '\'' +
-                ", email='" + email + '\'' +
+                ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

@@ -19,7 +19,7 @@ public class UserResource {
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
     public Usuario getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return usuarioRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", userPrincipal.getId()));
+        return usuarioRepository.findByUserName(userPrincipal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "userName", userPrincipal.getUsername()));
     }
 }
