@@ -1,8 +1,8 @@
 package py.com.fuentepy.appfinanzasBackend.resource;
 
 import py.com.fuentepy.appfinanzasBackend.exception.ResourceNotFoundException;
-import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
-import py.com.fuentepy.appfinanzasBackend.repository.UsuarioRepository;
+import py.com.fuentepy.appfinanzasBackend.entity.Mamusuario;
+import py.com.fuentepy.appfinanzasBackend.repository.MamusuarioRepository;
 import py.com.fuentepy.appfinanzasBackend.security.CurrentUser;
 import py.com.fuentepy.appfinanzasBackend.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserResource {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private MamusuarioRepository mamusuarioRepository;
 
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
-    public Usuario getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return usuarioRepository.findByUserName(userPrincipal.getUsername())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", "userName", userPrincipal.getUsername()));
+    public Mamusuario getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+        return mamusuarioRepository.findByLogUsuario(userPrincipal.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("Mamusuario", "userName", userPrincipal.getUsername()));
     }
 }

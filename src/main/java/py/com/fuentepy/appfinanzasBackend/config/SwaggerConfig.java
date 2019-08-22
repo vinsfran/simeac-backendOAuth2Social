@@ -29,8 +29,8 @@ public class SwaggerConfig {
 
     private ApiInfo metaInfo() {
         ApiInfo apiInfo = new ApiInfo(
-                "App Finanzas Backend",
-                "API DOC para App Finanzas Backend",
+                "Simeac Backend",
+                "API DOC para Simeac Backend",
                 "1.0",
                 "Termino del service",
                 new Contact("Fuente PY S.A.", "http://fuentepy.com.py/", "desarrollo@fuentepy.com.py"),

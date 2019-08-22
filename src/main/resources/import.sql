@@ -1,1 +1,0 @@
-INSERT INTO usuarios (user_name, name, email, image_url, email_verified, password, provider_id) VALUES ('vinsfran', 'Vicente','vinsfran2@gmail.com','',true, '$2a$10$pQG5o8CbpWe8g9zqzimGT.m3qmM//WysZX8tN1pnAmuR6HdEoKtte','');

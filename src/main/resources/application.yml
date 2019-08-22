@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/simeac_db
-    username: postgres
-    password: admin123
+    url: jdbc:postgresql://126.10.10.10:5432/simeac_db
+    username: acceso
+    password: acceso01
     driver-class-name: org.postgresql.Driver
     tomcat:
       test-while-idle: true
@@ -11,7 +11,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
       implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     properties:
       hibernate:

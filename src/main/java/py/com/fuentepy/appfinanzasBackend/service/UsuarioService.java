@@ -1,8 +1,8 @@
 package py.com.fuentepy.appfinanzasBackend.service;
 
-import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
+import py.com.fuentepy.appfinanzasBackend.entity.Mamusuario;
 
 public interface UsuarioService {
 
-    Usuario findById(Long id);
+    Mamusuario findById(String id);
 }

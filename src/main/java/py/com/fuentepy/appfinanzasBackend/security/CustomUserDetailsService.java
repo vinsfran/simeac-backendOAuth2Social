@@ -1,8 +1,8 @@
 package py.com.fuentepy.appfinanzasBackend.security;
 
-import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
+import py.com.fuentepy.appfinanzasBackend.entity.Mamusuario;
 import py.com.fuentepy.appfinanzasBackend.exception.ResourceNotFoundException;
-import py.com.fuentepy.appfinanzasBackend.repository.UsuarioRepository;
+import py.com.fuentepy.appfinanzasBackend.repository.MamusuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,26 +14,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    UsuarioRepository usuarioRepository;
+    MamusuarioRepository mamusuarioRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String userName)
             throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUserName(userName)
+        Mamusuario mamusuario = mamusuarioRepository.findByLogUsuario(userName)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("Usuario not found with userName : " + userName)
+                        new UsernameNotFoundException("Mamusuario not found with userName : " + userName)
                 );
 
-        return UserPrincipal.create(usuario);
+        return UserPrincipal.create(mamusuario);
     }
 
     @Transactional
-    public UserDetails loadUserById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Usuario", "id", id)
+    public UserDetails loadUserById(String id) {
+        Mamusuario mamusuario = mamusuarioRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Mamusuario", "id", id)
         );
 
-        return UserPrincipal.create(usuario);
+        return UserPrincipal.create(mamusuario);
     }
 }

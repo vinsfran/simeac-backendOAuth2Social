@@ -1,12 +1,11 @@
 package py.com.fuentepy.appfinanzasBackend.resource;
 
-import py.com.fuentepy.appfinanzasBackend.entity.Usuario;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import py.com.fuentepy.appfinanzasBackend.entity.Mamusuario;
 import py.com.fuentepy.appfinanzasBackend.exception.BadRequestException;
-import py.com.fuentepy.appfinanzasBackend.payload.ApiResponse;
-import py.com.fuentepy.appfinanzasBackend.payload.AuthResponse;
-import py.com.fuentepy.appfinanzasBackend.payload.LoginRequest;
-import py.com.fuentepy.appfinanzasBackend.payload.SignUpRequest;
-import py.com.fuentepy.appfinanzasBackend.repository.UsuarioRepository;
+import py.com.fuentepy.appfinanzasBackend.payload.*;
+import py.com.fuentepy.appfinanzasBackend.repository.MamusuarioRepository;
 import py.com.fuentepy.appfinanzasBackend.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +25,13 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthResource {
 
+    private static final Log LOG = LogFactory.getLog(AuthResource.class);
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private MamusuarioRepository mamusuarioRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,6 +41,17 @@ public class AuthResource {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        Mamusuario mamusuario = null;
+        Optional<Mamusuario> optional = mamusuarioRepository.findByLogUsuario(loginRequest.getUserName());
+        if (optional.isPresent()) {
+            mamusuario = optional.get();
+            LOG.info("USU: " + mamusuario.getLogUsuario());
+            LOG.info("PAS: " + mamusuario.getPasPassword());
+        } else {
+            throw new BadRequestException("Email no existe.");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUserName(),
@@ -50,57 +62,57 @@ public class AuthResource {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = tokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponse(token));
+        //BASE64 antes de enviar
+//        token = StringUtil.encodeBase64(token);
+        return ResponseEntity.ok(new AuthResponse(token, mamusuario.getLogUsuario()));
     }
 
-    @PostMapping("/loginSocial")
-    public ResponseEntity<?> authenticateUserSocial(@Valid @RequestBody LoginRequest loginRequest) {
-        Usuario usuario = null;
+    @PutMapping("/activate")
+    public ResponseEntity<?> activateUser(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
 
-        Optional<Usuario> optional = usuarioRepository.findByUserName(loginRequest.getUserName());
+        Mamusuario mamusuario = null;
+        Optional<Mamusuario> optional = mamusuarioRepository.findByLogUsuario(resetPasswordRequest.getUserName());
         if (optional.isPresent()) {
-            usuario = optional.get();
+            mamusuario = optional.get();
+            LOG.info("USU: " + mamusuario.getLogUsuario());
+            LOG.info("PAS: " + mamusuario.getPasPassword());
         } else {
-            throw new BadRequestException("Email no existe.");
+            throw new BadRequestException("Mamusuario no existe.");
         }
+        // Creating mamusuario's account
+//        Mamusuario mamusuario = new Mamusuario();
+//        mamusuario.setName(signUpRequest.getName());
+//        mamusuario.setUserName(signUpRequest.getUserName());
+//        mamusuario.setPassword(signUpRequest.getPassword());
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        usuario.getEmail(),
-                        usuario.getPassword()
-                )
-        );
+        mamusuario.setPasPassword(passwordEncoder.encode(resetPasswordRequest.getPasswordNew()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Mamusuario result = mamusuarioRepository.save(mamusuario);
 
-        String token = tokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new ApiResponse(true, "Mamusuario " + result.getLogUsuario() + " Activado"));
     }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
         System.out.println("registerUser " + signUpRequest.toString());
-        if (usuarioRepository.existsByUserName(signUpRequest.getUserName())) {
+        if (mamusuarioRepository.existsByLogUsuario(signUpRequest.getUserName())) {
             throw new BadRequestException("Email address already in use.");
         }
 
-        // Creating usuario's account
-        Usuario usuario = new Usuario();
-        usuario.setName(signUpRequest.getName());
-        usuario.setUserName(signUpRequest.getUserName());
-        usuario.setPassword(signUpRequest.getPassword());
-
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
-        Usuario result = usuarioRepository.save(usuario);
+        // Creating mamusuario's account
+        Mamusuario mamusuario = new Mamusuario();
+        mamusuario.setLogUsuario(signUpRequest.getUserName());
+        mamusuario.setLogUsuario(signUpRequest.getName());
+        mamusuario.setPasPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+        Mamusuario result = mamusuarioRepository.save(mamusuario);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/usuario/me")
-                .buildAndExpand(result.getUserName()).toUri();
+                .fromCurrentContextPath().path("/mamusuario/me")
+                .buildAndExpand(result.getLogUsuario()).toUri();
 
         return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "Usuario registered successfully"));
+                .body(new ApiResponse(true, "Mamusuario registered successfully"));
     }
 
 }
